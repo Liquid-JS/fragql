@@ -1,0 +1,40 @@
+{
+  "name": "@liquid-js/fragql",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "repository": "https://github.com/Liquid-JS/fragql.git",
+  "author": "HitkoDev",
+  "license": "MIT",
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "@types/graphql": "^0.12.4",
+    "@types/node": "^9.4.6",
+    "async-mkdirp": "^1.2.0",
+    "graphql": "^0.13.1",
+    "lit-ntml": "^0.3.7",
+    "param-case": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/codemirror": "^0.0.55",
+    "cm-highlight": "^0.1.1",
+    "codemirror": "^5.34.0",
+    "codemirror-graphql": "^0.6.12",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.56.2",
+    "rollup-plugin-commonjs": "^8.3.0",
+    "rollup-plugin-node-resolve": "^3.0.3",
+    "rollup-plugin-uglify": "^3.0.0",
+    "typescript": "^2.7.2"
+  },
+  "scripts": {
+    "rollup": "rollup",
+    "tsc": "tsc",
+    "build": "rimraf dist && tsc && rollup -c rollup.config.js",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
+}
