@@ -23,5 +23,8 @@
     "files": [
         "src/index.ts",
         "src/highlight.ts"
+    ],
+    "include": [
+        "src/transformers"
     ]
 }
