@@ -1,4 +1,4 @@
-import { parse, print, ExecutableDefinitionNode, FragmentDefinitionNode, DocumentNode, SelectionSetNode, FieldNode, InlineFragmentNode, VariableDefinitionNode } from 'graphql'
+import { parse, print, ExecutableDefinitionNode, FragmentDefinitionNode, DocumentNode, SelectionSetNode, FieldNode, InlineFragmentNode, VariableDefinitionNode, OperationDefinitionNode } from 'graphql'
 
 // @ts-ignore
 import * as paramCase from 'param-case'
@@ -29,12 +29,12 @@ const fragmentMap = new Map<string, ExecutableNode>()
 const operationsMap = new Map<string, ExecutableNode>()
 const nodeMap = new Map<string, ExecutableNode>()
 
-function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMap: { [key: string]: ExecutableDefinitionNode }) {
+function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMap: { [name: string]: SelectionSetNode }) {
     selectionSet.selections = [].concat(
         selectionSet.selections
             .map(selectionObj => {
                 if (selectionObj.kind == 'FragmentSpread' && selectionObj.name.value in dependenciesMap) {
-                    return dependenciesMap[selectionObj.name.value].selectionSet.selections
+                    return dependenciesMap[selectionObj.name.value].selections
                 } else {
                     const selection = selectionObj as (FieldNode | InlineFragmentNode)
                     if (selection.selectionSet)
@@ -48,10 +48,15 @@ function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMap: { [k
     return selectionSet
 }
 
-function flattenFragments(definition: ExecutableDefinitionNode, dependencies: Set<ExecutableNode>) {
-    const dependenciesMap: { [key: string]: ExecutableDefinitionNode } = {}
-    dependencies.forEach(dep => dependenciesMap[dep.name] = dep.definition)
-    definition.selectionSet = parseSelectionSet(definition.selectionSet, dependenciesMap)
+function flatten(doc: DocumentNode) {
+    let op = doc.definitions[0] as (FragmentDefinitionNode | OperationDefinitionNode)
+    let dep = doc.definitions.slice(1) as FragmentDefinitionNode[]
+    const map: { [name: string]: SelectionSetNode } = {}
+    dep
+        .reverse()
+        .forEach(node => map[node.name.value] = parseSelectionSet(node.selectionSet, map))
+    op.selectionSet = parseSelectionSet(op.selectionSet, map)
+    doc.definitions = [op]
 }
 
 function recursiveNodes(node: any, cb: (node) => void) {
@@ -155,15 +160,9 @@ export class ExecutableNode {
         }
         this.document = parse(print(doc))
 
-        /*flattenFragments(this.definition, this.dependencies)
-        const flatDoc: DocumentNode = {
-            kind: 'Document',
-            definitions: [
-                this,
-                ...this.dependencies
-            ].map(node => node.definition)
-        }
-        this.flatDocument = parse(print(flatDoc))*/
+        const flatDoc = parse(print(doc))
+        flatten(flatDoc)
+        this.flatDocument = parse(print(flatDoc))
     }
 
     toString(flat = false) {

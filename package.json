@@ -1,6 +1,6 @@
 {
   "name": "@liquid-js/fragql",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "repository": "https://github.com/Liquid-JS/fragql.git",
   "author": "HitkoDev",
@@ -29,8 +29,8 @@
   "scripts": {
     "rollup": "rollup",
     "tsc": "tsc",
-    "build": "rimraf dist && tsc && rollup -c rollup.config.js",
-    "prepack": "npm run build"
+    "build": "tsc && rollup -c rollup.config.js",
+    "prepack": "rimraf dist && npm run build"
   },
   "files": [
     "dist",
