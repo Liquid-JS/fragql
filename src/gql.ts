@@ -155,7 +155,7 @@ export class ExecutableNode {
         }
         this.document = parse(print(doc))
 
-        flattenFragments(this.definition, this.dependencies)
+        /*flattenFragments(this.definition, this.dependencies)
         const flatDoc: DocumentNode = {
             kind: 'Document',
             definitions: [
@@ -163,11 +163,28 @@ export class ExecutableNode {
                 ...this.dependencies
             ].map(node => node.definition)
         }
-        this.flatDocument = parse(print(flatDoc))
+        this.flatDocument = parse(print(flatDoc))*/
     }
 
     toString(flat = false) {
         return print(flat ? this.flatDocument : this.document)
+    }
+
+    dispose() {
+        if (this.definition.kind == 'FragmentDefinition')
+            fragmentMap.delete(this.key)
+        else if (this.definition.kind == 'OperationDefinition')
+            operationsMap.delete(this.key)
+    }
+}
+
+export function gqlHMR(module): typeof gql {
+    return (parts: TemplateStringsArray, ...captures: ExecutableNode[]) => {
+        const node = gql(parts, ...captures)
+        if (module.hot)
+            module.hot.dispose(() => node.dispose())
+
+        return node
     }
 }
 
