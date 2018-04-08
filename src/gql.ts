@@ -163,6 +163,12 @@ export class ExecutableNode {
         const flatDoc = parse(print(doc))
         flatten(flatDoc)
         this.flatDocument = parse(print(flatDoc))
+
+        const str = this.toString()
+        if (this.definition.kind == 'FragmentDefinition')
+            exports.metadata.fragments[this.key].str = str
+        else if (this.definition.kind == 'OperationDefinition')
+            exports.metadata.operations[this.key].str = str
     }
 
     toString(flat = false) {
