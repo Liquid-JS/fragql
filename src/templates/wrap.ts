@@ -1,7 +1,7 @@
-import { html } from '../html.js'
+import { render, html } from 'ssr-lit-html'
 
-export function wrapTpl(sidebar: string | Promise<string> = '', content: string | Promise<string> = '', urlPrefix: string = '') {
-    return html`
+export async function wrapTpl(sidebar: string | Promise<string> = '', content: string | Promise<string> = '', urlPrefix: string = '') {
+    return render(html`
         <!DOCTYPE html>
         <html>
 
@@ -28,6 +28,19 @@ export function wrapTpl(sidebar: string | Promise<string> = '', content: string 
                     color: inherit;
                     text-decoration: none;
                 }
+                body {
+                    display: flex;
+                    margin: 15px;
+                    padding: 0;
+                }
+                .sidebar {
+                    flex: 200px 1 1;
+                    margin: 15px;
+                }
+                .main {
+                    flex: 360px 1000 1000;
+                    margin: 15px;
+                }
             </style>
         </head>
 
@@ -38,5 +51,5 @@ export function wrapTpl(sidebar: string | Promise<string> = '', content: string 
         </body>
 
         </html>
-    `
+    `)
 }

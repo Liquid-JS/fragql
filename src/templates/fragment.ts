@@ -1,4 +1,5 @@
-import { html, escapeRegExp } from '../html.js'
+import { html } from 'ssr-lit-html'
+import { escapeRegExp } from '../html.js'
 import { FragmentMetadata } from '../gql.js'
 
 export function fragmentTpl(fragment: (FragmentMetadata & { key: string })) {

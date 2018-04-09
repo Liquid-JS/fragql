@@ -1,11 +1,14 @@
 {
   "name": "@liquid-js/fragql",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "repository": "https://github.com/Liquid-JS/fragql.git",
   "author": "HitkoDev",
   "license": "MIT",
   "typings": "dist/index.d.ts",
+  "bin": {
+    "fragql": "bin/fragql.js"
+  },
   "keywords": [
     "graphql",
     "query",
@@ -18,11 +21,13 @@
     "@types/node": "^9.4.6",
     "async-mkdirp": "^1.2.0",
     "graphql": "^0.13.1",
-    "lit-ntml": "^0.3.7",
-    "param-case": "^2.1.1"
+    "param-case": "^2.1.1",
+    "ssr-lit-html": "^0.0.5",
+    "yargs": "^11.0.0"
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.55",
+    "@types/yargs": "^11.0.0",
     "cm-highlight": "^0.1.1",
     "codemirror": "^5.34.0",
     "codemirror-graphql": "^0.6.12",

@@ -1,4 +1,5 @@
-import { html, escapeRegExp } from '../html.js'
+import { html } from 'ssr-lit-html'
+import { escapeRegExp } from '../html.js'
 import { OperationMeteadata } from '../gql.js'
 
 export function operationTpl(operation: (OperationMeteadata & { key: string })) {
