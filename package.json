@@ -1,6 +1,6 @@
 {
   "name": "@liquid-js/fragql",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "dist/index.js",
   "repository": "https://github.com/Liquid-JS/fragql.git",
   "author": "HitkoDev",
