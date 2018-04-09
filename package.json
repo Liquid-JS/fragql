@@ -1,6 +1,6 @@
 {
   "name": "@liquid-js/fragql",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "repository": "https://github.com/Liquid-JS/fragql.git",
   "author": "HitkoDev",
@@ -45,6 +45,7 @@
     "prepack": "rimraf dist && npm run build"
   },
   "files": [
+    "bin",
     "dist",
     "README.md",
     "LICENSE"
