@@ -1,1 +1,2 @@
+#!node
 require('../dist/cli')
