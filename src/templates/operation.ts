@@ -2,13 +2,24 @@ import { html } from 'ssr-lit-html'
 import { escapeRegExp } from '../html.js'
 import { OperationMeteadata } from '../gql.js'
 
+const rand = Math.random().toString().substr(2)
+
 export function operationTpl(operation: (OperationMeteadata & { key: string })) {
     let parsedBody = operation.body
+    let i = 0
+    const values = []
     Object.keys(operation.dependencyKeyMap)
         .forEach(name => {
             let regex = new RegExp(escapeRegExp('...' + name), 'g')
-            parsedBody = parsedBody.replace(regex, `...<a href="../fragments/${operation.dependencyKeyMap[name]}.html">${name}</a>`)
+            parsedBody = parsedBody.replace(regex, () => {
+                values.push(html`...<a href="../fragments/${operation.dependencyKeyMap[name]}.html">${name}</a>`);
+                i++
+                return `A${i}_${rand}`
+            })
         })
+
+    const parts = parsedBody.split(new RegExp(`A\\d+_${rand}`, 'g'))
+    parsedBody = html(parts, ...values)
 
     const signature: any = { id: operation.key }
     if (Object.keys(operation.variables).length > 0)

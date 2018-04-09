@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as mkdirp from 'async-mkdirp'
+import * as resolve from 'resolve'
 
 import { Metadata, metadata } from './gql.js'
 import { wrapTpl } from './templates/wrap.js'
@@ -107,9 +108,17 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
                 .then(content => writeFile(path.join(target, 'fragments', `${fragment.key}.html`), content, asBuffer))
         )
     )
+    const codemirror = resolve.sync('codemirror', {
+        pathFilter(pkg, _path, relativePath) {
+            if (pkg && pkg.style)
+                return pkg.style
+
+            return relativePath
+        }
+    })
     promises.push(
         copyFile(path.normalize(path.join(__dirname, '../dist/assets/highlight.js')), path.join(target, 'assets', 'highlight.js'), asBuffer),
-        copyFile(path.normalize(path.join(__dirname, '../node_modules/codemirror/lib/codemirror.css')), path.join(target, 'assets', 'codemirror.css'), asBuffer)
+        copyFile(path.normalize(codemirror), path.join(target, 'assets', 'codemirror.css'), asBuffer)
     )
 
     const results = await Promise.all(promises)
