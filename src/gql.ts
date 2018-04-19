@@ -1,7 +1,7 @@
-import { parse, print, ExecutableDefinitionNode, FragmentDefinitionNode, DocumentNode, SelectionSetNode, FieldNode, InlineFragmentNode, VariableDefinitionNode, OperationDefinitionNode } from 'graphql'
-
+import { DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, VariableDefinitionNode, parse, print } from 'graphql'
 // @ts-ignore
 import * as paramCase from 'param-case'
+import { flatten, recursiveNodes } from './utils'
 
 export interface FragmentMetadata extends OperationMeteadata {
     onType?: string
@@ -28,54 +28,6 @@ export const metadata: Metadata = {
 const fragmentMap = new Map<string, ExecutableNode>()
 const operationsMap = new Map<string, ExecutableNode>()
 const nodeMap = new Map<string, ExecutableNode>()
-
-function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMap: { [name: string]: SelectionSetNode }) {
-    selectionSet.selections = [].concat(
-        selectionSet.selections
-            .map(selectionObj => {
-                if (selectionObj.kind == 'FragmentSpread' && selectionObj.name.value in dependenciesMap) {
-                    return dependenciesMap[selectionObj.name.value].selections
-                } else {
-                    const selection = selectionObj as (FieldNode | InlineFragmentNode)
-                    if (selection.selectionSet)
-                        selection.selectionSet = parseSelectionSet(selection.selectionSet, dependenciesMap)
-
-                    return [selection]
-                }
-            })
-    )
-
-    return selectionSet
-}
-
-function flatten(doc: DocumentNode) {
-    let op = doc.definitions[0] as (FragmentDefinitionNode | OperationDefinitionNode)
-    let dep = doc.definitions.slice(1) as FragmentDefinitionNode[]
-    const map: { [name: string]: SelectionSetNode } = {}
-    dep
-        .reverse()
-        .forEach(node => map[node.name.value] = parseSelectionSet(node.selectionSet, map))
-    op.selectionSet = parseSelectionSet(op.selectionSet, map)
-    doc.definitions = [op]
-}
-
-function recursiveNodes(node: any, cb: (node) => void) {
-    if (!node.kind || !(typeof node === 'object'))
-        return
-
-    cb(node)
-
-    Object.keys(node)
-        .forEach(key => {
-            if (!node[key])
-                return
-
-            if (Array.isArray(node[key]))
-                return node[key].forEach(el => recursiveNodes(el, cb))
-
-            recursiveNodes(node[key], cb)
-        })
-}
 
 function setNodeWithuniqueKey(node: ExecutableNode, map: Map<string, ExecutableNode>, prefix = '', unique = false): string {
     let key = prefix.toLowerCase().replace(/[^a-z]/g, '') + '_' + paramCase(node.name)
