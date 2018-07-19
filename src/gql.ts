@@ -1,7 +1,7 @@
-import { buildSchema, DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, GraphQLSchema, parse, print, validate, VariableDefinitionNode } from 'graphql';
+import { buildSchema, DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, GraphQLSchema, parse, print, validate, VariableDefinitionNode } from 'graphql'
 // @ts-ignore
-import * as paramCase from 'param-case';
-import { flatten, recursiveNodes } from './utils';
+import * as paramCase from 'param-case'
+import { flatten, recursiveNodes } from './utils'
 
 export interface OperationMeteadata {
     name: string
