@@ -1,4 +1,4 @@
-import { render, html } from 'ssr-lit-html'
+import { html, render } from 'ssr-lit-html'
 
 export async function wrapTpl(sidebar: string | Promise<string> = '', content: string | Promise<string> = '', urlPrefix: string = '') {
     return render(html`

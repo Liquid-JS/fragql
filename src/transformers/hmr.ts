@@ -1,4 +1,4 @@
-import * as ts from "typescript"
+import * as ts from 'typescript'
 
 const MODULE_NAME = '@liquid-js/fragql'
 const TAG_IMPORT = 'gql'
@@ -7,7 +7,7 @@ const HMR_FACTORY_IMPORT = 'gqlHMR'
 export default (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return function transformSourceFile(source: ts.SourceFile) {
         if (source.isDeclarationFile) {
-            return source;
+            return source
         }
 
         function visitor(node: ts.Node): ts.VisitResult<ts.Node> {
@@ -15,24 +15,24 @@ export default (context: ts.TransformationContext): ts.Transformer<ts.SourceFile
                 let originalName = ''
                 let hasHMRImport = false
 
-                node.importClause.namedBindings['elements'].forEach((node: ts.ImportSpecifier) => {
+                node.importClause.namedBindings['elements'].forEach((importNode: ts.ImportSpecifier) => {
                     if (hasHMRImport)
                         return
 
-                    if (node.propertyName && node.propertyName.escapedText == HMR_FACTORY_IMPORT)
+                    if (importNode.propertyName && importNode.propertyName.escapedText == HMR_FACTORY_IMPORT)
                         return hasHMRImport = true
 
-                    if (!node.propertyName && node.name.escapedText == HMR_FACTORY_IMPORT)
+                    if (!importNode.propertyName && importNode.name.escapedText == HMR_FACTORY_IMPORT)
                         return hasHMRImport = true
 
-                    if (node.propertyName && node.propertyName.escapedText == TAG_IMPORT) {
-                        originalName = node.name.escapedText + ''
-                        node.propertyName = ts.createIdentifier(HMR_FACTORY_IMPORT)
-                        node.name = ts.createIdentifier(originalName + '$$')
-                    } else if (!node.propertyName && node.name.escapedText == TAG_IMPORT) {
-                        originalName = node.name.escapedText + ''
-                        node.propertyName = ts.createIdentifier(HMR_FACTORY_IMPORT)
-                        node.name = ts.createIdentifier(originalName + '$$')
+                    if (importNode.propertyName && importNode.propertyName.escapedText == TAG_IMPORT) {
+                        originalName = importNode.name.escapedText + ''
+                        importNode.propertyName = ts.createIdentifier(HMR_FACTORY_IMPORT)
+                        importNode.name = ts.createIdentifier(originalName + '$$')
+                    } else if (!importNode.propertyName && importNode.name.escapedText == TAG_IMPORT) {
+                        originalName = importNode.name.escapedText + ''
+                        importNode.propertyName = ts.createIdentifier(HMR_FACTORY_IMPORT)
+                        importNode.name = ts.createIdentifier(originalName + '$$')
                     }
                 })
 

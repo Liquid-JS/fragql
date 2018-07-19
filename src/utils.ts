@@ -20,8 +20,8 @@ export function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMa
 }
 
 export function flatten(doc: DocumentNode) {
-    let op = doc.definitions[0] as (FragmentDefinitionNode | OperationDefinitionNode)
-    let dep = doc.definitions.slice(1) as FragmentDefinitionNode[]
+    const op = doc.definitions[0] as (FragmentDefinitionNode | OperationDefinitionNode)
+    const dep = doc.definitions.slice(1) as FragmentDefinitionNode[]
     const map: { [name: string]: SelectionSetNode } = {}
     dep
         .reverse()

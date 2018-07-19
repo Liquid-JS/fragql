@@ -1,13 +1,16 @@
+import * as mkdirp from 'async-mkdirp'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as mkdirp from 'async-mkdirp'
-import * as resolve from 'resolve'
-
-import { Metadata, metadata } from './gql.js'
-import { wrapTpl } from './templates/wrap.js'
-import { sidebarTpl } from './templates/sidebar.js'
-import { operationTpl } from './templates/operation.js'
+import * as nodeResolve from 'resolve'
+import { promisify } from 'util'
+import { Metadata, metadata as globalMetadata } from './gql.js'
 import { fragmentTpl } from './templates/fragment.js'
+import { operationTpl } from './templates/operation.js'
+import { sidebarTpl } from './templates/sidebar.js'
+import { wrapTpl } from './templates/wrap.js'
+
+const pWriteFile = promisify(fs.writeFile)
+const pReadFile = promisify(fs.readFile)
 
 async function writeFile(filePath: string, content: string, asBuffer: boolean) {
     if (asBuffer)
@@ -15,31 +18,19 @@ async function writeFile(filePath: string, content: string, asBuffer: boolean) {
             [filePath]: new Buffer(content, 'utf8')
         }
 
-    let dirname = path.dirname(filePath)
+    const dirname = path.dirname(filePath)
     await mkdirp(dirname)
-    return new Promise((resolve, reject) => {
-        fs.writeFile(filePath, content, (err) => {
-            if (err)
-                return reject(err)
-            resolve()
-        })
-    })
+    return pWriteFile(filePath, content)
 }
 
 async function copyFile(source: string, target: string, asBuffer: boolean) {
     if (asBuffer)
-        return new Promise((resolve, reject) => {
-            fs.readFile(source, (err, buff) => {
-                if (err)
-                    return reject(err)
+        return pReadFile(source)
+            .then(buff => ({
+                [target]: buff
+            }))
 
-                resolve({
-                    [target]: buff
-                })
-            })
-        })
-
-    let dirname = path.dirname(target)
+    const dirname = path.dirname(target)
     await mkdirp(dirname)
     return new Promise((resolve, reject) => {
         const done = (err?) => {
@@ -48,14 +39,14 @@ async function copyFile(source: string, target: string, asBuffer: boolean) {
             resolve()
         }
         const rd = fs.createReadStream(source)
-        rd.on("error", (err) => {
+        rd.on('error', (err) => {
             done(err)
         })
         const wr = fs.createWriteStream(target)
-        wr.on("error", (err) => {
+        wr.on('error', (err) => {
             done(err)
         })
-        wr.on("close", () => {
+        wr.on('close', () => {
             done()
         })
         rd.pipe(wr)
@@ -108,7 +99,7 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
                 .then(content => writeFile(path.join(target, 'fragments', `${fragment.key}.html`), content, asBuffer))
         )
     )
-    const codemirror = resolve.sync('codemirror', {
+    const codemirror = nodeResolve.sync('codemirror', {
         pathFilter(pkg, _path, relativePath) {
             if (pkg && pkg.style)
                 return pkg.style
@@ -123,7 +114,7 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
 
     const results = await Promise.all(promises)
     if (asBuffer) {
-        let map = Object.assign({}, ...results)
+        const map = Object.assign({}, ...results)
         return map
     }
 }
@@ -131,5 +122,5 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
 export async function generateDocs(): Promise<{ [path: string]: Buffer }>
 export async function generateDocs(target: string): Promise<void>
 export async function generateDocs(target?: string): Promise<{ [path: string]: Buffer } | void> {
-    return renderMetadata(metadata, target)
+    return renderMetadata(globalMetadata, target)
 }

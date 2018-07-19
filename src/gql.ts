@@ -1,11 +1,7 @@
-import { DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, VariableDefinitionNode, parse, print } from 'graphql'
+import { buildSchema, DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, GraphQLSchema, parse, print, validate, VariableDefinitionNode } from 'graphql';
 // @ts-ignore
-import * as paramCase from 'param-case'
-import { flatten, recursiveNodes } from './utils'
-
-export interface FragmentMetadata extends OperationMeteadata {
-    onType?: string
-}
+import * as paramCase from 'param-case';
+import { flatten, recursiveNodes } from './utils';
 
 export interface OperationMeteadata {
     name: string
@@ -13,6 +9,11 @@ export interface OperationMeteadata {
     body: string
     dependencyKeyMap: { [name: string]: string }
     variables: { [variable: string]: string }
+    str?: string
+}
+
+export interface FragmentMetadata extends OperationMeteadata {
+    onType?: string
 }
 
 export interface Metadata {
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
 const fragmentMap = new Map<string, ExecutableNode>()
 const operationsMap = new Map<string, ExecutableNode>()
 const nodeMap = new Map<string, ExecutableNode>()
+let schema: GraphQLSchema
 
 function setNodeWithuniqueKey(node: ExecutableNode, map: Map<string, ExecutableNode>, prefix = '', unique = false): string {
     let key = prefix.toLowerCase().replace(/[^a-z]/g, '') + '_' + paramCase(node.name)
@@ -41,6 +43,28 @@ function setNodeWithuniqueKey(node: ExecutableNode, map: Map<string, ExecutableN
     }
     map.set(key, node)
     return key
+}
+
+/**
+ * Load graphql schema from string, and use it to validate queries
+ *
+ * @param source graphql schema or string containing schema definition
+ */
+export function loadSchema(source: string | GraphQLSchema) {
+    if (typeof source === 'string')
+        try {
+            schema = buildSchema(source)
+        } catch (_err) {
+            schema = undefined
+        }
+    else if (source instanceof GraphQLSchema)
+        schema = source
+
+    if (schema) {
+        const errors = new Array<Error>()
+        operationsMap.forEach(node => errors.concat(node.validate()))
+        return errors
+    }
 }
 
 export function generateNodeMetadata(node: ExecutableNode) {
@@ -57,12 +81,12 @@ export function generateNodeMetadata(node: ExecutableNode) {
 
     const dependsOn = new Set<string>()
     const variables: { [key: string]: string } = {}
-    recursiveNodes(node.definition, (node) => {
-        if (node.kind == 'FragmentSpread' && node.name.value in dependencyKeyMap)
-            dependsOn.add(dependencyKeyMap[node.name.value])
+    recursiveNodes(node.definition, (childNode) => {
+        if (childNode.kind == 'FragmentSpread' && childNode.name.value in dependencyKeyMap)
+            dependsOn.add(dependencyKeyMap[childNode.name.value])
 
-        if (node.kind == 'VariableDefinition')
-            variables[(node as VariableDefinitionNode).variable.name.value] = '...'
+        if (childNode.kind == 'VariableDefinition')
+            variables[(childNode as VariableDefinitionNode).variable.name.value] = '...'
     })
 
     if (node.definition.kind == 'FragmentDefinition')
@@ -92,7 +116,8 @@ export class ExecutableNode {
     constructor(
         public readonly name: string,
         public readonly definition: ExecutableDefinitionNode,
-        public readonly dependencies: Set<ExecutableNode>
+        public readonly dependencies: Set<ExecutableNode>,
+        private readonly stack?: string[]
     ) {
         this.key = paramCase(this.name)
 
@@ -118,9 +143,15 @@ export class ExecutableNode {
 
         const str = this.toString()
         if (this.definition.kind == 'FragmentDefinition')
-            exports.metadata.fragments[this.key].str = str
+            metadata.fragments[this.key].str = str
         else if (this.definition.kind == 'OperationDefinition')
-            exports.metadata.operations[this.key].str = str
+            metadata.operations[this.key].str = str
+
+        if (schema && this.definition.kind == 'OperationDefinition') {
+            const errors = this.validate()
+            if (errors.length)
+                throw errors[0]
+        }
     }
 
     toString(flat = false) {
@@ -132,6 +163,21 @@ export class ExecutableNode {
             fragmentMap.delete(this.key)
         else if (this.definition.kind == 'OperationDefinition')
             operationsMap.delete(this.key)
+    }
+
+    validate() {
+        return validate(schema, this.document)
+            .map(error => {
+                const err = new Error(error.message)
+                if (this.stack)
+                    err.stack = err.stack
+                        .split('\n')
+                        .filter((_e, i) => i < 1)
+                        .concat(this.stack)
+                        .join('\n')
+
+                return err
+            })
     }
 }
 
@@ -148,8 +194,8 @@ export function gqlHMR(module): typeof gql {
 export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]): ExecutableNode {
     const dependencies = new Set<ExecutableNode>()
     const capturedMap = new Map<string, ExecutableNode>()
-    const body = parts.reduce((body, part, i) => {
-        body += part
+    const body = parts.reduce((joined, part, i) => {
+        joined += part
         if (i < captures.length) {
             if (captures[i].definition.kind != 'FragmentDefinition')
                 throw new TypeError(`Tempate can only capture fragment definitions, but ${captures[i].definition.kind} was found`)
@@ -157,7 +203,7 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
             if (capturedMap.has(captures[i].name) && capturedMap.get(captures[i].name) !== captures[i])
                 throw new TypeError(`Multiple fragments for name ${captures[i].name} found`)
 
-            body += captures[i].name
+            joined += captures[i].name
 
             capturedMap.set(captures[i].name, captures[i])
             dependencies.add(captures[i])
@@ -170,7 +216,7 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
                     capturedMap.set(dep.name, dep)
                 })
         }
-        return body
+        return joined
     }, '')
 
     const defintions = parse(body).definitions
@@ -180,7 +226,7 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
         || !defintions[0]['name']
         || !defintions[0]['name'].value
     )
-        throw new TypeError("Template should only contain a single named ExecutableDefinitionNode")
+        throw new TypeError('Template should only contain a single named ExecutableDefinitionNode')
 
     // Make sure calls with identical signature return the samme node
     const cont = print({
@@ -210,7 +256,11 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
             return existingNode
     }
 
-    const node = new ExecutableNode(defintions[0]['name'].value, defintions[0] as ExecutableDefinitionNode, dependencies)
+    const stack = new Error().stack
+        .split('\n')
+        .filter((_e, i) => i > 1)
+
+    const node = new ExecutableNode(defintions[0]['name'].value, defintions[0] as ExecutableDefinitionNode, dependencies, stack)
     nodeMap.set(cont, node)
     return node
 }

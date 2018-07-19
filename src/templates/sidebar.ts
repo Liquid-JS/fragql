@@ -1,5 +1,5 @@
 import { html } from 'ssr-lit-html'
-import { OperationMeteadata, FragmentMetadata } from '../gql.js'
+import { FragmentMetadata, OperationMeteadata } from '../gql.js'
 
 export function sidebarTpl(operations: (OperationMeteadata & { key: string })[], fragments: (FragmentMetadata & { key: string })[], urlPrefix: string = '') {
     return html`
@@ -13,7 +13,7 @@ export function sidebarTpl(operations: (OperationMeteadata & { key: string })[],
                     </li>
                     `)}
                 </ul>
-            `} 
+            `}
             ${fragments.length < 1 ? '' : html`
                 <h2>Fragments</h2>
                 <ul>
