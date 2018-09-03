@@ -1,6 +1,6 @@
-import resolve from 'rollup-plugin-node-resolve'
+import compiler from '@ampproject/rollup-plugin-closure-compiler'
 import commonjs from 'rollup-plugin-commonjs'
-import uglify from 'rollup-plugin-uglify'
+import resolve from 'rollup-plugin-node-resolve'
 
 export default {
     input: 'dist/highlight.js',
@@ -12,8 +12,8 @@ export default {
     plugins: [
         resolve(),
         commonjs(),
-        uglify({
-            toplevel: true
+        compiler({
+            language_out: 'ECMASCRIPT6'
         })
     ]
 }

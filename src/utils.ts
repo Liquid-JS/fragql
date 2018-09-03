@@ -9,7 +9,9 @@ export function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMa
                 } else {
                     const selection = selectionObj as (FieldNode | InlineFragmentNode)
                     if (selection.selectionSet)
-                        selection.selectionSet = parseSelectionSet(selection.selectionSet, dependenciesMap)
+                        Object.assign(selection, {
+                            selectionSet: parseSelectionSet(selection.selectionSet, dependenciesMap)
+                        })
 
                     return [selection]
                 }
@@ -26,8 +28,12 @@ export function flatten(doc: DocumentNode) {
     dep
         .reverse()
         .forEach(node => map[node.name.value] = parseSelectionSet(node.selectionSet, map))
-    op.selectionSet = parseSelectionSet(op.selectionSet, map)
-    doc.definitions = [op]
+    Object.assign(op, {
+        selectionSet: parseSelectionSet(op.selectionSet, map)
+    })
+    Object.assign(doc, {
+        definitions: [op]
+    })
 }
 
 export function recursiveNodes(node: any, cb: (node) => void) {
