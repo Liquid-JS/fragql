@@ -7,7 +7,7 @@ import { fragmentTpl } from './templates/fragment.js'
 import { operationTpl } from './templates/operation.js'
 import { sidebarTpl } from './templates/sidebar.js'
 import { wrapTpl } from './templates/wrap.js'
-import { mkdirp } from './utils.js'
+import { mkdirp } from './utils/mkdirp'
 
 const pWriteFile = promisify(fs.writeFile)
 const pReadFile = promisify(fs.readFile)
