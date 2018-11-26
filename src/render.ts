@@ -1,4 +1,3 @@
-import * as mkdirp from 'async-mkdirp'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as nodeResolve from 'resolve'
@@ -8,6 +7,7 @@ import { fragmentTpl } from './templates/fragment.js'
 import { operationTpl } from './templates/operation.js'
 import { sidebarTpl } from './templates/sidebar.js'
 import { wrapTpl } from './templates/wrap.js'
+import { mkdirp } from './utils.js'
 
 const pWriteFile = promisify(fs.writeFile)
 const pReadFile = promisify(fs.readFile)

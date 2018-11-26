@@ -1,4 +1,7 @@
+import { mkdir, stat } from 'fs'
 import { DocumentNode, FieldNode, FragmentDefinitionNode, InlineFragmentNode, OperationDefinitionNode, SelectionSetNode } from 'graphql'
+import { dirname } from 'path'
+import { promisify } from 'util'
 
 export function parseSelectionSet(selectionSet: SelectionSetNode, dependenciesMap: { [name: string]: SelectionSetNode }) {
     selectionSet.selections = [].concat(
@@ -53,3 +56,22 @@ export function recursiveNodes(node: any, cb: (node) => void) {
             recursiveNodes(node[key], cb)
         })
 }
+
+const pMkdir = promisify(mkdir)
+const pStat = promisify(stat)
+
+export async function mkdirp(path: string, mode = 0o777) {
+    try {
+        await pMkdir(path, mode)
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            await mkdirp(dirname(path), mode)
+            await mkdirp(path, mode)
+        } else {
+            const stats = await pStat(path)
+            if (!stats.isDirectory())
+                throw error
+        }
+    }
+}
+

@@ -1,6 +1,7 @@
 import compiler from '@ampproject/rollup-plugin-closure-compiler'
 import commonjs from 'rollup-plugin-commonjs'
 import resolve from 'rollup-plugin-node-resolve'
+import { terser } from "rollup-plugin-terser"
 
 export default {
     input: 'dist/highlight.js',
@@ -14,6 +15,7 @@ export default {
         commonjs(),
         compiler({
             language_out: 'ECMASCRIPT6'
-        })
+        }),
+        terser()
     ]
 }
