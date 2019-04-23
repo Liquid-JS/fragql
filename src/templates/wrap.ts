@@ -1,6 +1,6 @@
-import { html, render } from 'ssr-lit-html'
+import { html, render, TemplateResult } from 'ssr-lit-html'
 
-export async function wrapTpl(sidebar: string | Promise<string> = '', content: string | Promise<string> = '', urlPrefix: string = '') {
+export async function wrapTpl(sidebar: string | TemplateResult = '', content: string | TemplateResult = '', urlPrefix: string = '') {
     return render(html`
         <!DOCTYPE html>
         <html>

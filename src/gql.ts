@@ -2,6 +2,7 @@ import { buildSchema, DocumentNode, ExecutableDefinitionNode, FragmentDefinition
 // @ts-ignore
 import * as paramCase from 'param-case'
 import { flatten, recursiveNodes } from './utils'
+import { validationRules } from './utils/rules'
 
 export interface OperationMeteadata {
     name: string
@@ -62,6 +63,7 @@ export function loadSchema(source: string | GraphQLSchema) {
 
     if (schema) {
         const errors = new Array<Error>()
+        fragmentMap.forEach(node => errors.concat(node.validate()))
         operationsMap.forEach(node => errors.concat(node.validate()))
         return errors
     }
@@ -147,7 +149,7 @@ export class ExecutableNode {
         else if (this.definition.kind == 'OperationDefinition')
             metadata.operations[this.key].str = str
 
-        if (schema && this.definition.kind == 'OperationDefinition') {
+        if (schema) {
             const errors = this.validate()
             if (errors.length)
                 throw errors[0]
@@ -166,7 +168,7 @@ export class ExecutableNode {
     }
 
     validate() {
-        return validate(schema, this.document)
+        return validate(schema, this.document, validationRules)
             .map(error => {
                 const err = new Error(error.message)
                 if (this.stack)

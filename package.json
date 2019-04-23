@@ -1,6 +1,6 @@
 {
     "name": "@liquid-js/fragql",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "main": "dist/index.js",
     "repository": "https://github.com/Liquid-JS/fragql.git",
     "author": "HitkoDev",
@@ -17,29 +17,29 @@
     ],
     "description": "Another GraphQL template literal",
     "dependencies": {
-        "@types/graphql": "^14.0.0",
+        "@types/graphql": "^14.2.0",
         "@types/node": "*",
-        "graphql": "^14.0.2",
+        "graphql": "^14.2.0",
         "param-case": "^2.1.1",
-        "resolve": "^1.8.1",
-        "ssr-lit-html": "^0.0.5",
-        "yargs": "^12.0.5"
+        "resolve": "^1.10.0",
+        "ssr-lit-html": "^0.1.0",
+        "yargs": "^13.2.2"
     },
     "devDependencies": {
-        "@ampproject/rollup-plugin-closure-compiler": "^0.8.4",
-        "@types/codemirror": "^0.0.69",
+        "@ampproject/rollup-plugin-closure-compiler": "^0.9.0",
+        "@types/codemirror": "^0.0.74",
         "@types/resolve": "^0.0.8",
-        "@types/yargs": "^12.0.1",
+        "@types/yargs": "^13.0.0",
         "cm-highlight": "^0.1.1",
-        "codemirror": "^5.42.0",
+        "codemirror": "^5.46.0",
         "codemirror-graphql": "^0.8.3",
-        "rimraf": "^2.6.2",
-        "rollup": "^0.67.3",
-        "rollup-plugin-commonjs": "^9.2.0",
-        "rollup-plugin-node-resolve": "^3.4.0",
-        "rollup-plugin-terser": "^3.0.0",
-        "tslint": "^5.11.0",
-        "typescript": "^3.1.6"
+        "rimraf": "^2.6.3",
+        "rollup": "^1.10.1",
+        "rollup-plugin-commonjs": "^9.3.4",
+        "rollup-plugin-node-resolve": "^4.2.3",
+        "rollup-plugin-terser": "^4.0.4",
+        "tslint": "^5.16.0",
+        "typescript": "^3.4.4"
     },
     "scripts": {
         "rollup": "rollup",

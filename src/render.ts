@@ -15,7 +15,7 @@ const pReadFile = promisify(fs.readFile)
 async function writeFile(filePath: string, content: string, asBuffer: boolean) {
     if (asBuffer)
         return {
-            [filePath]: new Buffer(content, 'utf8')
+            [filePath]: Buffer.from(content, 'utf8')
         }
 
     const dirname = path.dirname(filePath)

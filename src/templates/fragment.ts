@@ -1,6 +1,7 @@
 import { html } from 'ssr-lit-html'
 import { FragmentMetadata } from '../gql.js'
 import { escapeRegExp } from '../html.js'
+import { makeTemplateObject } from '../utils/html.js'
 
 const rand = Math.random().toString().substr(2)
 
@@ -19,13 +20,13 @@ export function fragmentTpl(fragment: (FragmentMetadata & { key: string })) {
         })
 
     const parts = parsedBody.split(new RegExp(`A\\d+_${rand}`, 'g'))
-    parsedBody = html(parts, ...values)
+    const result = html(makeTemplateObject(parts), ...values)
 
     return html`
         <h1>${fragment.name}</h1>
         <div class="item-content">
             <h3>Fragment signature</h3>
-            <pre><code class="graphql">${parsedBody}</code></pre>
+            <pre><code class="graphql">${result}</code></pre>
         </div>
     `
 }
