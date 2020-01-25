@@ -1,6 +1,5 @@
 import { buildSchema, DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, GraphQLSchema, parse, print, validate, VariableDefinitionNode } from 'graphql'
-// @ts-ignore
-import * as paramCase from 'param-case'
+import { paramCase } from 'param-case'
 import { flatten, recursiveNodes } from './utils'
 import { validationRules } from './utils/rules'
 
