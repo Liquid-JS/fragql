@@ -3,6 +3,8 @@ import { paramCase } from 'param-case'
 import { flatten, recursiveNodes } from './utils'
 import { validationRules } from './utils/rules'
 
+export const ANONYMOUS_DEFINITION = `anonymous${Math.random().toFixed(10).substr(2)}`
+
 export interface OperationMeteadata {
     name: string
     dependsOn: Set<string>
@@ -124,7 +126,7 @@ export class ExecutableNode {
 
         if (this.definition.kind == 'FragmentDefinition')
             this.key = setNodeWithuniqueKey(this, fragmentMap, 'fragment')
-        else if (this.definition.kind == 'OperationDefinition')
+        else if (this.definition.kind == 'OperationDefinition' && name != ANONYMOUS_DEFINITION)
             this.key = setNodeWithuniqueKey(this, operationsMap, 'operation', true)
 
         generateNodeMetadata(this)
@@ -148,7 +150,7 @@ export class ExecutableNode {
         else if (this.definition.kind == 'OperationDefinition')
             metadata.operations[this.key].str = str
 
-        if (schema) {
+        if (schema && name != ANONYMOUS_DEFINITION) {
             const errors = this.validate()
             if (errors.length)
                 throw errors[0]
@@ -182,6 +184,21 @@ export class ExecutableNode {
     }
 }
 
+export class SelectionSetNode extends ExecutableNode {
+
+    readonly inline: string
+
+    constructor(
+        definition: ExecutableDefinitionNode,
+        dependencies: Set<ExecutableNode>,
+        stack?: string[]
+    ) {
+        super(ANONYMOUS_DEFINITION, definition, dependencies, stack)
+        const val = print(definition)
+        this.inline = val.substr(1, val.length - 2)
+    }
+}
+
 export function gqlHMR(module): typeof gql {
     return (parts: TemplateStringsArray, ...captures: ExecutableNode[]) => {
         const node = gql(parts, ...captures)
@@ -198,16 +215,20 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
     const body = parts.reduce((joined, part, i) => {
         joined += part
         if (i < captures.length) {
-            if (captures[i].definition.kind != 'FragmentDefinition')
-                throw new TypeError(`Tempate can only capture fragment definitions, but ${captures[i].definition.kind} was found`)
+            if (captures[i] instanceof SelectionSetNode) {
+                joined += (captures[i] as SelectionSetNode).inline
+            } else {
+                if (captures[i].definition.kind != 'FragmentDefinition')
+                    throw new TypeError(`Tempate can only capture fragment definitions, but ${captures[i].definition.kind} was found`)
 
-            if (capturedMap.has(captures[i].name) && capturedMap.get(captures[i].name) !== captures[i])
-                throw new TypeError(`Multiple fragments for name ${captures[i].name} found`)
+                if (capturedMap.has(captures[i].name) && capturedMap.get(captures[i].name) !== captures[i])
+                    throw new TypeError(`Multiple fragments for name ${captures[i].name} found`)
 
-            joined += captures[i].name
+                joined += captures[i].name
+                capturedMap.set(captures[i].name, captures[i])
+                dependencies.add(captures[i])
+            }
 
-            capturedMap.set(captures[i].name, captures[i])
-            dependencies.add(captures[i])
             captures[i].dependencies
                 .forEach(dep => {
                     if (capturedMap.has(dep.name) && capturedMap.get(dep.name) !== dep)
@@ -221,11 +242,11 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
     }, '')
 
     const defintions = parse(body).definitions
+
     if (
         defintions.length != 1
         || (defintions[0].kind != 'OperationDefinition' && defintions[0].kind != 'FragmentDefinition')
-        || !defintions[0]['name']
-        || !defintions[0]['name'].value
+        || (defintions[0].kind != 'OperationDefinition' && (!defintions[0]['name'] || !defintions[0]['name'].value))
     )
         throw new TypeError('Template should only contain a single named ExecutableDefinitionNode')
 
@@ -261,7 +282,9 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
         .split('\n')
         .filter((_e, i) => i > 1)
 
-    const node = new ExecutableNode(defintions[0]['name'].value, defintions[0] as ExecutableDefinitionNode, dependencies, stack)
+    const node = defintions[0]['name']?.value
+        ? new ExecutableNode(defintions[0]['name'].value, defintions[0] as ExecutableDefinitionNode, dependencies, stack)
+        : new SelectionSetNode(defintions[0] as ExecutableDefinitionNode, dependencies, stack)
     nodeMap.set(cont, node)
     return node
 }
