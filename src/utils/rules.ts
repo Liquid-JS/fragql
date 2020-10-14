@@ -1,4 +1,4 @@
-import { NoUnusedFragments } from 'graphql/validation/rules/NoUnusedFragments'
+import { NoUnusedFragmentsRule } from 'graphql/validation/rules/NoUnusedFragmentsRule'
 import { specifiedRules } from 'graphql/validation/specifiedRules'
 
-export const validationRules = specifiedRules.filter(r => r != NoUnusedFragments)
+export const validationRules = specifiedRules.filter(r => r != NoUnusedFragmentsRule)
