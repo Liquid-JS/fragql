@@ -32,7 +32,7 @@ async function copyFile(source: string, target: string, asBuffer: boolean) {
 
     const dirname = path.dirname(target)
     await mkdirp(dirname)
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         const done = (err?) => {
             if (err)
                 return reject(err)

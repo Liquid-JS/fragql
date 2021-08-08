@@ -1,4 +1,4 @@
-import { buildSchema, DocumentNode, ExecutableDefinitionNode, FragmentDefinitionNode, GraphQLSchema, parse, print, validate, VariableDefinitionNode } from 'graphql'
+import { buildSchema, DocumentNode, ExecutableDefinitionNode, FieldNode, FragmentDefinitionNode, GraphQLSchema, parse, print, SelectionSetNode as GqlSelectionSetNode, validate, VariableDefinitionNode } from 'graphql'
 import { paramCase } from 'param-case'
 import { flatten, recursiveNodes } from './utils'
 import { validationRules } from './utils/rules'
@@ -209,6 +209,48 @@ export function gqlHMR(module): typeof gql {
     }
 }
 
+export function addTypename(node: {
+    selectionSet: GqlSelectionSetNode;
+}, addIfMissing = true) {
+    let hasTypename = false
+    node.selectionSet.selections.forEach(sel => {
+        switch (sel.kind) {
+            case 'Field':
+                if (sel.name.value == '__typename')
+                    hasTypename = true
+                if (sel.selectionSet)
+                    addTypename(sel as {
+                        selectionSet: GqlSelectionSetNode;
+                    })
+                break
+
+            case 'FragmentSpread':
+                hasTypename = true
+                break
+
+            case 'InlineFragment':
+                hasTypename = addTypename(sel, false)
+        }
+    })
+    if (!hasTypename && addIfMissing) {
+        node.selectionSet = {
+            ...node.selectionSet,
+            selections: [
+                ...node.selectionSet.selections,
+                {
+                    kind: 'Field',
+                    name: {
+                        kind: 'Name',
+                        value: '__typename'
+                    }
+                } as FieldNode
+            ]
+        }
+        hasTypename = true
+    }
+    return hasTypename
+}
+
 export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]): ExecutableNode {
     const dependencies = new Set<ExecutableNode>()
     const capturedMap = new Map<string, ExecutableNode>()
@@ -241,12 +283,12 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
         return joined
     }, '')
 
-    const defintions = parse(body).definitions
+    const definitions = parse(body).definitions
 
     if (
-        defintions.length != 1
-        || (defintions[0].kind != 'OperationDefinition' && defintions[0].kind != 'FragmentDefinition')
-        || (defintions[0].kind != 'OperationDefinition' && (!defintions[0]['name'] || !defintions[0]['name'].value))
+        definitions.length != 1
+        || (definitions[0].kind != 'OperationDefinition' && definitions[0].kind != 'FragmentDefinition')
+        || (definitions[0].kind != 'OperationDefinition' && (!definitions[0]['name'] || !definitions[0]['name'].value))
     )
         throw new TypeError('Template should only contain a single named ExecutableDefinitionNode')
 
@@ -254,7 +296,7 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
     const cont = print({
         kind: 'Document',
         definitions: [
-            defintions[0]
+            definitions[0]
         ]
     } as DocumentNode)
     if (nodeMap.has(cont)) {
@@ -278,13 +320,15 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
             return existingNode
     }
 
+    addTypename(definitions[0])
+
     const stack = new Error().stack
         .split('\n')
         .filter((_e, i) => i > 1)
 
-    const node = defintions[0]['name']?.value
-        ? new ExecutableNode(defintions[0]['name'].value, defintions[0] as ExecutableDefinitionNode, dependencies, stack)
-        : new SelectionSetNode(defintions[0] as ExecutableDefinitionNode, dependencies, stack)
+    const node = definitions[0]['name']?.value
+        ? new ExecutableNode(definitions[0]['name'].value, definitions[0] as ExecutableDefinitionNode, dependencies, stack)
+        : new SelectionSetNode(definitions[0] as ExecutableDefinitionNode, dependencies, stack)
     nodeMap.set(cont, node)
     return node
 }
