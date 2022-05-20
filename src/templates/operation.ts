@@ -3,7 +3,7 @@ import { OperationMeteadata } from '../gql.js'
 import { escapeRegExp } from '../html.js'
 import { makeTemplateObject } from '../utils/html.js'
 
-const rand = Math.random().toString().substr(2)
+const rand = Math.random().toString().substring(2)
 
 export function operationTpl(operation: (OperationMeteadata & { key: string })) {
     let parsedBody = operation.body

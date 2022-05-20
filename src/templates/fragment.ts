@@ -3,7 +3,7 @@ import { FragmentMetadata } from '../gql.js'
 import { escapeRegExp } from '../html.js'
 import { makeTemplateObject } from '../utils/html.js'
 
-const rand = Math.random().toString().substr(2)
+const rand = Math.random().toString().substring(2)
 
 export function fragmentTpl(fragment: (FragmentMetadata & { key: string })) {
     let parsedBody = fragment.body

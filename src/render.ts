@@ -102,7 +102,7 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
     const codemirror = nodeResolve.sync('codemirror', {
         pathFilter(pkg, _path, relativePath) {
             if (pkg && pkg.style)
-                return pkg.style
+                return pkg.style as string
 
             return relativePath
         }

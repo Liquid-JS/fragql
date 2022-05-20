@@ -3,7 +3,7 @@ import { paramCase } from 'param-case'
 import { flatten, recursiveNodes } from './utils'
 import { validationRules } from './utils/rules'
 
-export const ANONYMOUS_DEFINITION = `anonymous${Math.random().toFixed(10).substr(2)}`
+export const ANONYMOUS_DEFINITION = `anonymous${Math.random().toFixed(10).substring(2)}`
 
 export interface OperationMeteadata {
     name: string
@@ -51,8 +51,9 @@ function setNodeWithuniqueKey(node: ExecutableNode, map: Map<string, ExecutableN
  * Load graphql schema from string, and use it to validate queries
  *
  * @param source graphql schema or string containing schema definition
+ * @param reload if true, flush all existing data
  */
-export function loadSchema(source: string | GraphQLSchema) {
+export function loadSchema(source: string | GraphQLSchema, reload = false) {
     if (typeof source === 'string')
         try {
             schema = buildSchema(source)
@@ -63,6 +64,13 @@ export function loadSchema(source: string | GraphQLSchema) {
         schema = source
 
     if (schema) {
+        if (reload) {
+            nodeMap.clear()
+            fragmentMap.clear()
+            operationsMap.clear()
+            metadata.fragments = {}
+            metadata.operations = {}
+        }
         const errors = new Array<Error>()
         fragmentMap.forEach(node => errors.concat(node.validate()))
         operationsMap.forEach(node => errors.concat(node.validate()))
@@ -195,7 +203,7 @@ export class SelectionSetNode extends ExecutableNode {
     ) {
         super(ANONYMOUS_DEFINITION, definition, dependencies, stack)
         const val = print(definition)
-        this.inline = val.substr(1, val.length - 2)
+        this.inline = val.substring(1, val.length - 1)
     }
 }
 
