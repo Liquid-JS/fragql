@@ -179,7 +179,7 @@ export class ExecutableNode {
     validate() {
         return validate(schema, this.document, validationRules)
             .map(error => {
-                const err = new Error(error.message)
+                const err = new GQLValidationError(error.message)
                 if (this.stack)
                     err.stack = err.stack
                         .split('\n')
@@ -191,6 +191,8 @@ export class ExecutableNode {
             })
     }
 }
+
+export class GQLValidationError extends Error { }
 
 export class SelectionSetNode extends ExecutableNode {
 
