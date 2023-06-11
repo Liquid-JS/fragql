@@ -17,6 +17,9 @@ export default {
         injectProcessEnv({
             NODE_ENV: 'production'
         }),
+        terser({
+            ecma: 2020
+        }),
         compiler({
             language_in: 'ECMASCRIPT_2020',
             language_out: 'ECMASCRIPT_2020'

@@ -1,4 +1,4 @@
-import { buildSchema, DocumentNode, ExecutableDefinitionNode, FieldNode, FragmentDefinitionNode, GraphQLSchema, parse, print, SelectionSetNode as GqlSelectionSetNode, validate, VariableDefinitionNode } from 'graphql'
+import { buildSchema, DocumentNode, ExecutableDefinitionNode, FieldNode, FragmentDefinitionNode, GraphQLSchema, parse, print, SelectionSetNode as GqlSelectionSetNode, validate, VariableDefinitionNode, Kind } from 'graphql'
 import { paramCase } from 'param-case'
 import { flatten, recursiveNodes } from './utils'
 import { validationRules } from './utils/rules'
@@ -140,7 +140,7 @@ export class ExecutableNode {
         generateNodeMetadata(this)
 
         const doc: DocumentNode = {
-            kind: 'Document',
+            kind: Kind.DOCUMENT,
             definitions: [
                 this,
                 ...this.dependencies

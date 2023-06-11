@@ -1,6 +1,6 @@
 {
     "name": "@liquid-js/fragql",
-    "version": "0.9.2",
+    "version": "0.10.0",
     "main": "dist/index.js",
     "repository": "https://github.com/Liquid-JS/fragql.git",
     "author": "HitkoDev",
@@ -25,35 +25,35 @@
         }
     },
     "dependencies": {
-        "@types/node": "*",
-        "graphql": "<16.0.0",
+        "@types/node": "<19.0.0",
+        "graphql": "^16.6.0",
         "param-case": "^3.0.4",
-        "resolve": "^1.22.0",
+        "resolve": "^1.22.2",
         "ssr-lit-html": "^1.4.0",
-        "yargs": "^17.5.1"
+        "yargs": "^17.7.2"
     },
     "devDependencies": {
         "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
-        "@codemirror/language": "^0.20.2",
-        "@rollup/plugin-commonjs": "^22.0.0",
-        "@rollup/plugin-node-resolve": "^13.3.0",
-        "@types/codemirror": "^5.60.5",
+        "@codemirror/language": "^6.7.0",
+        "@rollup/plugin-commonjs": "^25.0.1",
+        "@rollup/plugin-node-resolve": "^15.1.0",
+        "@types/codemirror": "^5.60.8",
         "@types/resolve": "^1.20.2",
-        "@types/yargs": "^17.0.10",
+        "@types/yargs": "^17.0.24",
         "cm-highlight": "^0.1.1",
-        "codemirror": "^5.65.4",
-        "codemirror-graphql": "^1.3.0",
-        "rimraf": "^3.0.2",
-        "rollup": "^2.74.1",
+        "codemirror": "^6.0.1",
+        "codemirror-graphql": "^2.0.8",
+        "rimraf": "^5.0.1",
+        "rollup": "^3.25.0",
         "rollup-plugin-inject-process-env": "^1.3.1",
         "rollup-plugin-terser": "^7.0.2",
         "tslint": "^6.1.3",
-        "typescript": "^4.6.4"
+        "typescript": "^5.1.3"
     },
     "scripts": {
         "rollup": "rollup",
         "tsc": "tsc",
-        "build": "tsc && rollup -c rollup.config.js",
+        "build": "tsc && rollup -c rollup.config.mjs",
         "prepack": "rimraf dist && npm run build",
         "lint": "tslint --fix --project ."
     },
