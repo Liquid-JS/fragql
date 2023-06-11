@@ -1,6 +1,6 @@
 {
     "name": "@liquid-js/fragql",
-    "version": "0.10.0",
+    "version": "0.10.1",
     "main": "dist/index.js",
     "repository": "https://github.com/Liquid-JS/fragql.git",
     "author": "HitkoDev",
@@ -25,7 +25,6 @@
         }
     },
     "dependencies": {
-        "@types/node": "<19.0.0",
         "graphql": "^16.6.0",
         "param-case": "^3.0.4",
         "resolve": "^1.22.2",
@@ -38,6 +37,7 @@
         "@rollup/plugin-commonjs": "^25.0.1",
         "@rollup/plugin-node-resolve": "^15.1.0",
         "@types/codemirror": "^5.60.8",
+        "@types/node": "<19.0.0",
         "@types/resolve": "^1.20.2",
         "@types/yargs": "^17.0.24",
         "cm-highlight": "^0.1.1",
