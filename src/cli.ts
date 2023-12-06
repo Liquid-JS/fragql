@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as yargs from 'yargs'
-import { renderMetadata } from '.'
+import { renderMetadata } from './render'
 
 yargs
     .command('render [metadata]', 'render documentation from metadata', (args) => args
