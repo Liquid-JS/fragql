@@ -107,6 +107,7 @@
   "bugs": {
     "url": "https://github.com/Liquid-JS/fragql/issues"
   },
+  "homepage": "https://liquid-js.github.io/fragql/",
   "packageManager": "yarn@4.6.0",
   "clean-package": {
     "remove": [

@@ -10,7 +10,13 @@ Another GraphQL template literal.
 
     npm install @liquid-js/fragql
 
-## Example
+## API Documentation
+
+<https://liquid-js.github.io/fragql/>
+
+## Usage
+
+### With fragments
 
 ```js
 import { gql } from "@liquid-js/fragql";
@@ -29,11 +35,7 @@ query user($id: String){
   }
 }
 `;
-```
 
-### Fragmented string
-
-```js
 console.log(query.toString());
 ```
 
@@ -52,7 +54,7 @@ fragment userBasic on User {
 }
 ```
 
-### Flat string
+### Flatten fragments
 
 ```js
 console.log(query.toString(true));
