@@ -1,6 +1,20 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./src/qr-code.ts"],
+  "entryPoints": ["./src/index.ts"],
   "out": "docs",
-  "sort": ["kind", "instance-first", "source-order"]
+  "sort": ["kind", "instance-first", "source-order"],
+  "highlightLanguages": [
+    "bash",
+    "console",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "jsonc",
+    "json5",
+    "yaml",
+    "tsx",
+    "typescript",
+    "gql"
+  ]
 }
