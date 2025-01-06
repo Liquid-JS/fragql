@@ -1,4 +1,4 @@
-import { html } from "ssr-lit-html";
+import { html, ServerRenderedTemplate } from "@lit-labs/ssr";
 import { OperationMeteadata } from "../gql.js";
 import { escapeRegExp } from "../html.js";
 import { makeTemplateObject } from "../utils/html.js";
@@ -8,7 +8,7 @@ const rand = Math.random().toString().substring(2);
 export function operationTpl(operation: OperationMeteadata & { key: string }) {
   let parsedBody = operation.body;
   let i = 0;
-  const values = [];
+  const values = new Array<ServerRenderedTemplate>();
   Object.keys(operation.dependencyKeyMap).forEach((name) => {
     const regex = new RegExp(escapeRegExp("..." + name), "g");
     parsedBody = parsedBody.replace(regex, () => {
@@ -21,7 +21,7 @@ export function operationTpl(operation: OperationMeteadata & { key: string }) {
   const parts = parsedBody.split(new RegExp(`A\\d+_${rand}`, "g"));
   const result = html(makeTemplateObject(parts), ...values);
 
-  const signature: any = { id: operation.key };
+  const signature: { id: string; variables?: { [key: string]: string } } = { id: operation.key };
   if (Object.keys(operation.variables).length > 0) signature.variables = operation.variables;
 
   return html`

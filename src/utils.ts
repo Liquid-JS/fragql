@@ -11,21 +11,19 @@ export function parseSelectionSet(
   selectionSet: SelectionSetNode,
   dependenciesMap: { [name: string]: SelectionSetNode }
 ) {
-  selectionSet.selections = [].concat(
-    selectionSet.selections.map((selectionObj) => {
-      if (selectionObj.kind == "FragmentSpread" && selectionObj.name.value in dependenciesMap) {
-        return dependenciesMap[selectionObj.name.value].selections;
-      } else {
-        const selection = selectionObj as FieldNode | InlineFragmentNode;
-        if (selection.selectionSet)
-          Object.assign(selection, {
-            selectionSet: parseSelectionSet(selection.selectionSet, dependenciesMap)
-          });
+  selectionSet.selections = selectionSet.selections.flatMap((selectionObj) => {
+    if (selectionObj.kind == "FragmentSpread" && selectionObj.name.value in dependenciesMap) {
+      return dependenciesMap[selectionObj.name.value].selections;
+    } else {
+      const selection = selectionObj as FieldNode | InlineFragmentNode;
+      if (selection.selectionSet)
+        Object.assign(selection, {
+          selectionSet: parseSelectionSet(selection.selectionSet, dependenciesMap)
+        });
 
-        return [selection];
-      }
-    })
-  );
+      return [selection];
+    }
+  });
 
   return selectionSet;
 }
@@ -43,7 +41,8 @@ export function flatten(doc: DocumentNode) {
   });
 }
 
-export function recursiveNodes(node: any, cb: (node) => void) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function recursiveNodes(node: any, cb: (node: any) => void) {
   if (!node.kind || !(typeof node === "object")) return;
 
   cb(node);
@@ -53,6 +52,7 @@ export function recursiveNodes(node: any, cb: (node) => void) {
 
     if (Array.isArray(node[key])) return node[key].forEach((el) => recursiveNodes(el, cb));
 
-    recursiveNodes(node[key], cb);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recursiveNodes(node[key] as any, cb);
   });
 }

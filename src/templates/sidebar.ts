@@ -1,4 +1,4 @@
-import { html } from "ssr-lit-html";
+import { html } from "@lit-labs/ssr";
 import { FragmentMetadata, OperationMeteadata } from "../gql.js";
 
 export function sidebarTpl(

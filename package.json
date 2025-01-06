@@ -3,15 +3,15 @@
   "version": "0.10.3",
   "description": "Another GraphQL template literal.",
   "type": "module",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "bin": "bin/fragql.js",
   "files": [
     "bin",
     "lib"
   ],
   "peerDependencies": {
-    "codemirror": "^6.0.1"
+    "codemirror": "<6.0.0"
   },
   "peerDependenciesMeta": {
     "codemirror": {
@@ -19,20 +19,23 @@
     }
   },
   "dependencies": {
+    "@lit-labs/ssr": "^3.2.2",
     "graphql": "^16.10.0",
+    "lit": "^3.2.1",
     "param-case": "^4.0.0",
     "resolve": "^1.22.10",
-    "ssr-lit-html": "^1.4.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
-    "@codemirror/language": "^6.10.8",
+    "@codemirror/language": "6.0.0",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/js": "^9.17.0",
+    "@liquid-js/rollup-plugin-closure-compiler": "^0.27.6",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@testdeck/mocha": "^0.3.3",
     "@types/chai": "^5.0.1",
     "@types/codemirror": "^5.60.15",
@@ -45,11 +48,12 @@
     "chai": "^5.1.2",
     "clean-package": "^2.2.0",
     "cm-highlight": "^0.1.1",
-    "codemirror": "^6.0.1",
+    "codemirror": "<6.0.0",
     "codemirror-graphql": "^2.2.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
+    "google-closure-compiler": "^20240317.0.0",
     "husky": "^9.1.7",
     "mocha": "^11.0.1",
     "npm-check-updates": "^17.1.13",
@@ -57,7 +61,6 @@
     "rimraf": "^6.0.1",
     "rollup": "^4.30.0",
     "rollup-plugin-inject-process-env": "^1.3.1",
-    "rollup-plugin-terser": "^7.0.2",
     "source-map-support": "^0.5.21",
     "standard-version": "^9.5.0",
     "ts-node-maintained": "^10.9.4",
@@ -66,7 +69,8 @@
     "typescript-eslint": "^8.19.0"
   },
   "scripts": {
-    "build": "rimraf lib && tsc",
+    "build": "rimraf lib && rollup -c rollup.config.ts --configPlugin \"@rollup/plugin-typescript={tsconfig:'tsconfig.test.json'}\" && tsc",
+    "test": "mocha",
     "lint": "prettier -w . && eslint . --fix",
     "prepublishOnly": "npm run build",
     "prepare": "husky",

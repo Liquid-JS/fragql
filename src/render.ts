@@ -1,16 +1,17 @@
-import * as fs from "fs";
+import { createReadStream, createWriteStream } from "fs";
+import { writeFile as pwriteFile, readFile } from "fs/promises";
 import * as path from "path";
-import * as nodeResolve from "resolve";
-import { promisify } from "util";
+import noderesolve from "resolve";
+import { fileURLToPath } from "url";
 import { Metadata, metadata as globalMetadata } from "./gql.js";
 import { fragmentTpl } from "./templates/fragment.js";
 import { operationTpl } from "./templates/operation.js";
 import { sidebarTpl } from "./templates/sidebar.js";
 import { wrapTpl } from "./templates/wrap.js";
-import { mkdirp } from "./utils/mkdirp";
+import { mkdirp } from "./utils/mkdirp.js";
 
-const pWriteFile = promisify(fs.writeFile);
-const pReadFile = promisify(fs.readFile);
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 async function writeFile(filePath: string, content: string, asBuffer: boolean) {
   if (asBuffer)
@@ -20,27 +21,27 @@ async function writeFile(filePath: string, content: string, asBuffer: boolean) {
 
   const dirname = path.dirname(filePath);
   await mkdirp(dirname);
-  return pWriteFile(filePath, content);
+  return pwriteFile(filePath, content);
 }
 
 async function copyFile(source: string, target: string, asBuffer: boolean) {
   if (asBuffer)
-    return pReadFile(source).then((buff) => ({
+    return readFile(source).then((buff) => ({
       [target]: buff
     }));
 
   const dirname = path.dirname(target);
   await mkdirp(dirname);
   return new Promise<void>((resolve, reject) => {
-    const done = (err?) => {
+    const done = (err?: unknown) => {
       if (err) return reject(err);
       resolve();
     };
-    const rd = fs.createReadStream(source);
+    const rd = createReadStream(source);
     rd.on("error", (err) => {
       done(err);
     });
-    const wr = fs.createWriteStream(target);
+    const wr = createWriteStream(target);
     wr.on("error", (err) => {
       done(err);
     });
@@ -75,7 +76,7 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
   });
   fragments.sort((a, b) => a.key.localeCompare(b.key));
 
-  const promises: Promise<any>[] = [];
+  const promises: Promise<unknown>[] = [];
 
   promises.push(
     wrapTpl(sidebarTpl(operations, fragments)).then((content) =>
@@ -97,7 +98,7 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
       )
     )
   );
-  const codemirror = nodeResolve.sync("codemirror", {
+  const codemirror = noderesolve.sync("codemirror", {
     pathFilter(pkg, _path, relativePath) {
       if (pkg && pkg.style) return pkg.style as string;
 
@@ -106,7 +107,7 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
   });
   promises.push(
     copyFile(
-      path.normalize(path.join(__dirname, "../dist/assets/highlight.js")),
+      path.normalize(path.join(__dirname, "../lib/assets/highlight.js")),
       path.join(target, "assets", "highlight.js"),
       asBuffer
     ),
@@ -123,5 +124,6 @@ export async function renderMetadata(metadata: Metadata, target?: string): Promi
 export async function generateDocs(): Promise<{ [path: string]: Buffer }>;
 export async function generateDocs(target: string): Promise<void>;
 export async function generateDocs(target?: string): Promise<{ [path: string]: Buffer } | void> {
-  return renderMetadata(globalMetadata, target);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return renderMetadata(globalMetadata, target as any);
 }

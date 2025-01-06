@@ -1,4 +1,4 @@
-import { html } from "ssr-lit-html";
+import { html, ServerRenderedTemplate } from "@lit-labs/ssr";
 import { FragmentMetadata } from "../gql.js";
 import { escapeRegExp } from "../html.js";
 import { makeTemplateObject } from "../utils/html.js";
@@ -8,7 +8,7 @@ const rand = Math.random().toString().substring(2);
 export function fragmentTpl(fragment: FragmentMetadata & { key: string }) {
   let parsedBody = fragment.body;
   let i = 0;
-  const values = [];
+  const values = new Array<ServerRenderedTemplate>();
   Object.keys(fragment.dependencyKeyMap).forEach((name) => {
     const regex = new RegExp(escapeRegExp("..." + name), "g");
     parsedBody = parsedBody.replace(regex, () => {

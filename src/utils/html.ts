@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Create a safe TemplateStringsArray from a regular string array.
  * @param parts Array of template parts.

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["./src/**/*", "**/*.test.js", "**/*.test.ts", "rollup.config.ts"],
+  "exclude": []
+}

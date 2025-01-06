@@ -1,11 +1,12 @@
-import * as highlight from "cm-highlight";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import highlight from "cm-highlight";
 import "codemirror-graphql/mode";
 import "codemirror/mode/javascript/javascript";
+import { escapeRegExp } from "./html.js";
 
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 window["cmHl"] = highlight;
 
 ["graphql", "javascript"].forEach((type) => {
@@ -24,6 +25,6 @@ window["cmHl"] = highlight;
       hl = hl.replace(new RegExp(escapeRegExp(find), "g"), subMap[find]);
     });
     el.innerHTML = hl;
-    el.parentElement.classList.add("cm-s-graphiql");
+    el.parentElement?.classList.add("cm-s-graphiql");
   });
 });

@@ -16,10 +16,10 @@ Another GraphQL template literal.
 import { gql } from "@liquid-js/fragql";
 
 const userBasic = gql`
-fragment userBasic on User {
-  name
-  lastname
-}
+  fragment userBasic on User {
+    name
+    lastname
+  }
 `;
 
 const query = gql`
@@ -103,10 +103,10 @@ fetch("http://example.com/graphql", {
   });
 
 const userBasic = gql`
-fragment userBasic on User {
-  name
-  lastname
-}
+  fragment userBasic on User {
+    name
+    lastname
+  }
 `;
 
 const query = gql`

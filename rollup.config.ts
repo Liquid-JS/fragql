@@ -1,18 +1,22 @@
-import compiler from "@ampproject/rollup-plugin-closure-compiler";
+import compiler from "@liquid-js/rollup-plugin-closure-compiler";
 import commonjs from "@rollup/plugin-commonjs";
-import resolve from "@rollup/plugin-node-resolve";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import terser from "@rollup/plugin-terser";
+import typescript from "@rollup/plugin-typescript";
 import injectProcessEnv from "rollup-plugin-inject-process-env";
-import { terser } from "rollup-plugin-terser";
 
 export default {
-  input: "dist/highlight.js",
+  input: "src/highlight.ts",
   output: {
-    file: "dist/assets/highlight.js",
+    file: "./lib/assets/highlight.js",
     format: "iife",
     name: "highlight"
   },
   plugins: [
-    resolve(),
+    typescript({
+      declaration: false
+    }),
+    nodeResolve(),
     commonjs(),
     injectProcessEnv({
       NODE_ENV: "production"

@@ -4,17 +4,17 @@ import {
   ExecutableDefinitionNode,
   FieldNode,
   FragmentDefinitionNode,
+  SelectionSetNode as GqlSelectionSetNode,
   GraphQLSchema,
+  Kind,
   parse,
   print,
-  SelectionSetNode as GqlSelectionSetNode,
   validate,
-  VariableDefinitionNode,
-  Kind
+  VariableDefinitionNode
 } from "graphql";
 import { paramCase } from "param-case";
-import { flatten, recursiveNodes } from "./utils";
-import { validationRules } from "./utils/rules";
+import { flatten, recursiveNodes } from "./utils.js";
+import { validationRules } from "./utils/rules.js";
 
 export const ANONYMOUS_DEFINITION = `anonymous${Math.random().toFixed(10).substring(2)}`;
 
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 const fragmentMap = new Map<string, ExecutableNode>();
 const operationsMap = new Map<string, ExecutableNode>();
 const nodeMap = new Map<string, ExecutableNode>();
-let schema: GraphQLSchema;
+let schema: GraphQLSchema | undefined;
 
 function setNodeWithuniqueKey(
   node: ExecutableNode,
@@ -80,17 +80,23 @@ export function loadSchema(source: string | GraphQLSchema, reload = false) {
 
   if (schema) {
     if (reload) {
-      nodeMap.clear();
-      fragmentMap.clear();
-      operationsMap.clear();
-      metadata.fragments = {};
-      metadata.operations = {};
+      clearDefnitions();
     }
     const errors = new Array<Error>();
     fragmentMap.forEach((node) => errors.concat(node.validate()));
     operationsMap.forEach((node) => errors.concat(node.validate()));
     return errors;
   }
+
+  return undefined;
+}
+
+export function clearDefnitions() {
+  nodeMap.clear();
+  fragmentMap.clear();
+  operationsMap.clear();
+  metadata.fragments = {};
+  metadata.operations = {};
 }
 
 export function generateNodeMetadata(node: ExecutableNode) {
@@ -180,11 +186,12 @@ export class ExecutableNode {
   }
 
   validate() {
+    if (!schema) return [];
     return validate(schema, this.document, validationRules).map((error) => {
       const err = new GQLValidationError(error.message);
       if (this.stack)
         err.stack = err.stack
-          .split("\n")
+          ?.split("\n")
           .filter((_e, i) => i < 1)
           .concat(this.stack)
           .join("\n");
@@ -206,7 +213,8 @@ export class SelectionSetNode extends ExecutableNode {
   }
 }
 
-export function gqlHMR(module): typeof gql {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function gqlHMR(module: any): typeof gql {
   return (parts: TemplateStringsArray, ...captures: ExecutableNode[]) => {
     const node = gql(parts, ...captures);
     if (module.hot) module.hot.dispose(() => node.dispose());
@@ -313,24 +321,26 @@ export function gql(parts: TemplateStringsArray, ...captures: ExecutableNode[]):
     let equalDeps = true;
     try {
       dependencies.forEach((dep) => {
-        if (!existingNode.dependencies.has(dep)) {
+        if (!existingNode?.dependencies.has(dep)) {
           equalDeps = false;
           throw new Error();
         }
       });
-      existingNode.dependencies.forEach((dep) => {
+      existingNode?.dependencies.forEach((dep) => {
         if (!dependencies.has(dep)) {
           equalDeps = false;
           throw new Error();
         }
       });
-    } catch (e) {}
-    if (equalDeps) return existingNode;
+    } catch (_e) {
+      //pass
+    }
+    if (equalDeps) return existingNode!;
   }
 
   addTypename(definitions[0]);
 
-  const stack = new Error().stack.split("\n").filter((_e, i) => i > 1);
+  const stack = new Error().stack?.split("\n").filter((_e, i) => i > 1);
 
   const node = definitions[0]["name"]?.value
     ? new ExecutableNode(definitions[0]["name"].value, definitions[0] as ExecutableDefinitionNode, dependencies, stack)

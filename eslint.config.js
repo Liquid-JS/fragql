@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["lib", "node_modules", "coverage", "docs"]
+    ignores: ["lib", "node_modules", "coverage", "docs", "tmp"]
   },
   eslint.configs.recommended,
   eslintPluginPrettierRecommended,
