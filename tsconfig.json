@@ -1,32 +1,27 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2020",
-        "moduleResolution": "node",
-        "removeComments": true,
-        "experimentalDecorators": true,
-        "preserveConstEnums": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "outDir": "./dist",
-        "declaration": true,
-        "lib": [
-            "esnext.asynciterable",
-            "esnext",
-            "dom",
-            "dom.iterable"
-        ]
-    },
-    "exclude": [
-        "node_modules"
-    ],
-    "files": [
-        "src/index.ts",
-        "src/render.ts",
-        "src/highlight.ts",
-        "src/cli.ts"
-    ],
-    "include": [
-        "src/transformers"
-    ]
+  "compilerOptions": {
+    "strictPropertyInitialization": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "importHelpers": false,
+    "outDir": "./lib/",
+    "sourceMap": true,
+    "module": "esnext",
+    "target": "es2020",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["**/*.test.js", "**/*.test.ts"]
 }

@@ -1,66 +1,102 @@
 {
-    "name": "@liquid-js/fragql",
-    "version": "0.10.3",
-    "main": "dist/index.js",
-    "repository": "https://github.com/Liquid-JS/fragql.git",
-    "author": "HitkoDev",
-    "license": "MIT",
-    "typings": "dist/index.d.ts",
-    "bin": {
-        "fragql": "bin/fragql.js"
-    },
-    "keywords": [
-        "graphql",
-        "query",
-        "fragment",
-        "builder"
-    ],
-    "description": "Another GraphQL template literal",
-    "peerDependencies": {
-        "codemirror": "^5.65.4"
-    },
-    "peerDependenciesMeta": {
-        "codemirror": {
-            "optional": true
-        }
-    },
-    "dependencies": {
-        "graphql": "^16.8.1",
-        "param-case": "^3.0.4",
-        "resolve": "^1.22.8",
-        "ssr-lit-html": "^1.4.1",
-        "yargs": "^17.7.2"
-    },
-    "devDependencies": {
-        "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
-        "@codemirror/language": "^6.9.3",
-        "@rollup/plugin-commonjs": "^25.0.7",
-        "@rollup/plugin-node-resolve": "^15.2.3",
-        "@types/codemirror": "^5.60.15",
-        "@types/node": "^20.10.3",
-        "@types/resolve": "^1.20.6",
-        "@types/yargs": "^17.0.32",
-        "cm-highlight": "^0.1.1",
-        "codemirror": "^6.0.1",
-        "codemirror-graphql": "^2.0.10",
-        "rimraf": "^5.0.5",
-        "rollup": "^4.6.1",
-        "rollup-plugin-inject-process-env": "^1.3.1",
-        "rollup-plugin-terser": "^7.0.2",
-        "tslint": "^6.1.3",
-        "typescript": "^5.3.2"
-    },
-    "scripts": {
-        "rollup": "rollup",
-        "tsc": "tsc",
-        "build": "tsc && rollup -c rollup.config.mjs",
-        "prepack": "rimraf dist && npm run build",
-        "lint": "tslint --fix --project ."
-    },
-    "files": [
-        "bin",
-        "dist",
-        "README.md",
-        "LICENSE"
+  "name": "@liquid-js/fragql",
+  "version": "0.10.3",
+  "description": "Another GraphQL template literal.",
+  "type": "module",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "bin": "bin/fragql.js",
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "peerDependencies": {
+    "codemirror": "^6.0.1"
+  },
+  "peerDependenciesMeta": {
+    "codemirror": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "graphql": "^16.10.0",
+    "param-case": "^4.0.0",
+    "resolve": "^1.22.10",
+    "ssr-lit-html": "^1.4.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
+    "@codemirror/language": "^6.10.8",
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/js": "^9.17.0",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@testdeck/mocha": "^0.3.3",
+    "@types/chai": "^5.0.1",
+    "@types/codemirror": "^5.60.15",
+    "@types/eslint__js": "^8.42.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "<23.0.0",
+    "@types/resolve": "^1.20.6",
+    "@types/source-map-support": "^0.5.10",
+    "@types/yargs": "^17.0.33",
+    "chai": "^5.1.2",
+    "clean-package": "^2.2.0",
+    "cm-highlight": "^0.1.1",
+    "codemirror": "^6.0.1",
+    "codemirror-graphql": "^2.2.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.7",
+    "mocha": "^11.0.1",
+    "npm-check-updates": "^17.1.13",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.30.0",
+    "rollup-plugin-inject-process-env": "^1.3.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "source-map-support": "^0.5.21",
+    "standard-version": "^9.5.0",
+    "ts-node-maintained": "^10.9.4",
+    "typedoc": "^0.27.6",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0"
+  },
+  "scripts": {
+    "build": "rimraf lib && tsc",
+    "lint": "prettier -w . && eslint . --fix",
+    "prepublishOnly": "npm run build",
+    "prepare": "husky",
+    "release": "git diff --exit-code && standard-version && git push --follow-tags origin",
+    "docs": "typedoc",
+    "prepack": "clean-package",
+    "postpack": "clean-package restore"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liquid-JS/fragql.git"
+  },
+  "keywords": [
+    "graphql",
+    "query",
+    "fragment",
+    "builder"
+  ],
+  "author": "HitkoDev <development@hitko.si>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Liquid-JS/fragql/issues"
+  },
+  "packageManager": "yarn@4.6.0",
+  "clean-package": {
+    "remove": [
+      "packageManager",
+      "scripts",
+      "devDependencies",
+      "clean-package"
     ]
+  }
 }
