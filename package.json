@@ -1,6 +1,6 @@
 {
   "name": "@liquid-js/fragql",
-  "version": "0.11.0",
+  "version": "1.0.0",
   "description": "Another GraphQL template literal.",
   "type": "module",
   "main": "./lib/index.js",
