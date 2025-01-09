@@ -1,6 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [1.1.0](https://github.com/Liquid-JS/fragql/compare/v1.0.0...v1.1.0) (2025-01-09)
+
+
+### Features
+
+* cleanup ([3af578e](https://github.com/Liquid-JS/fragql/commit/3af578e52f95abe27c0d34ad2ae074f514b9f0dd))
 
 ## [1.0.0](https://github.com/Liquid-JS/fragql/compare/v0.11.0...v1.0.0) (2025-01-06)
 
