@@ -119,3 +119,7 @@ const query = gql`
   }
 `
 ```
+
+## License
+
+[MIT License](https://github.com/Liquid-JS/fragql/blob/master/LICENSE)
