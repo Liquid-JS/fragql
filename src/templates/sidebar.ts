@@ -8,34 +8,30 @@ export function sidebarTpl(
 ) {
     return html`
     <div class="sidebar__content">
-      ${operations.length < 1
+        ${operations.length < 1
             ? ''
             : html`
-            <h2>Operations</h2>
-            <ul>
-              ${operations.map(
-                    (el) => html`
-                  <li>
-                    <a href="${urlPrefix}operations/${el.key}.html">${el.name}</a>
-                  </li>
-                `
-                )}
-            </ul>
-          `}
-      ${fragments.length < 1
+                <h2>Operations</h2>
+                <ul>
+                    ${operations.map((el) => html`
+                    <li>
+                        <a href="${urlPrefix}operations/${el.key}.html">${el.name}</a>
+                    </li>
+                    `)}
+                </ul>
+            `}
+        ${fragments.length < 1
             ? ''
             : html`
-            <h2>Fragments</h2>
-            <ul>
-              ${fragments.map(
-                    (el) => html`
-                  <li>
-                    <a href="${urlPrefix}fragments/${el.key}.html">${el.name}</a>
-                  </li>
-                `
-                )}
-            </ul>
-          `}
+                <h2>Fragments</h2>
+                <ul>
+                    ${fragments.map((el) => html`
+                        <li>
+                        <a href="${urlPrefix}fragments/${el.key}.html">${el.name}</a>
+                        </li>
+                    `)}
+                </ul>
+            `}
     </div>
-  `
+`
 }
