@@ -19,24 +19,24 @@ Another GraphQL template literal.
 ### With fragments
 
 ```js
-import { gql } from "@liquid-js/fragql";
+import { gql } from '@liquid-js/fragql'
 
 const userBasic = gql`
   fragment userBasic on User {
     name
     lastname
   }
-`;
+`
 
 const query = gql`
-query user($id: String){
-  user(id: $id){
-    ...${userBasic}
+  query user($id: String){
+    user(id: $id){
+      ...${userBasic}
+    }
   }
-}
-`;
+`
 
-console.log(query.toString());
+console.log(query.toString())
 ```
 
 Gives
@@ -82,40 +82,40 @@ The following example obtains GraphQL schema from `http://example.com/graphql` a
 Notice `userBasic` fragment and `user` query don't wait for the schema to load - upon calling `loadSchema`, all existing queries are validated against it.
 
 ```js
-import { gql, loadSchema } from "@liquid-js/fragql";
-import { buildClientSchema, introspectionQuery } from "graphql";
+import { gql, loadSchema } from '@liquid-js/fragql'
+import { buildClientSchema, getIntrospectionQuery } from 'graphql'
 
-fetch("http://example.com/graphql", {
-  method: "POST",
-  mode: "cors",
-  cache: "no-cache",
-  credentials: "same-origin",
-  headers: {
-    "Content-Type": "application/json; charset=utf-8"
-  },
-  redirect: "follow",
-  referrer: "no-referrer",
-  body: JSON.stringify({ query: introspectionQuery })
+fetch('http://example.com/graphql', {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+    },
+    redirect: 'follow',
+    referrer: 'no-referrer',
+    body: JSON.stringify({ query: getIntrospectionQuery() })
 })
-  .then((res) => res.json())
-  .then((res) => buildClientSchema(res.data))
-  .then((schema) => loadSchema(schema))
-  .then((errors) => {
-    if (errors.length) throw errors[0];
-  });
+    .then((res) => res.json())
+    .then((res) => buildClientSchema(res.data))
+    .then((schema) => loadSchema(schema))
+    .then((errors) => {
+        if (errors.length) throw errors[0]
+    })
 
 const userBasic = gql`
   fragment userBasic on User {
     name
     lastname
   }
-`;
+`
 
 const query = gql`
-query user($id: String){
-  user(id: $id){
-    ...${userBasic}
+  query user($id: String){
+    user(id: $id){
+      ...${userBasic}
+    }
   }
-}
-`;
+`
 ```

@@ -1,14 +1,14 @@
-import { html, render } from "@lit-labs/ssr";
-import { collectResultSync } from "@lit-labs/ssr/lib/render-result.js";
-import { TemplateResult } from "lit";
+import { html, render } from '@lit-labs/ssr'
+import { collectResultSync } from '@lit-labs/ssr/lib/render-result.js'
+import { TemplateResult } from 'lit'
 
 export async function wrapTpl(
-  sidebar: string | TemplateResult = "",
-  content: string | TemplateResult = "",
-  urlPrefix: string = ""
+    sidebar: string | TemplateResult = '',
+    content: string | TemplateResult = '',
+    urlPrefix: string = ''
 ) {
-  return collectResultSync(
-    render(html`
+    return collectResultSync(
+        render(html`
       <!DOCTYPE html>
       <html>
         <head>
@@ -66,5 +66,5 @@ export async function wrapTpl(
         </body>
       </html>
     `)
-  );
+    )
 }
