@@ -637,7 +637,7 @@ __metadata:
     codemirror:
       optional: true
   bin:
-    fragql: bin/fragql.js
+    fragql: lib/cli.js
   languageName: unknown
   linkType: soft
 

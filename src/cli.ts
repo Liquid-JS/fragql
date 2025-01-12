@@ -18,6 +18,7 @@ await Promise.resolve(
                     })
                     .option('target', {
                         alias: 't',
+                        describe: 'target directory for the generated files',
                         default: './docs'
                     }),
             async (args) => {
@@ -29,6 +30,7 @@ await Promise.resolve(
                     .catch((err) => console.error(err))
             }
         )
+        .demandCommand()
         .showHelpOnFail(false)
         .strict()
         .help()

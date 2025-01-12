@@ -18,9 +18,7 @@
             "default": "./lib/gql.js"
         }
     },
-    "bin": {
-        "fragql": "lib/cli.js"
-    },
+    "bin": "lib/cli.js",
     "files": [
         "lib"
     ],
