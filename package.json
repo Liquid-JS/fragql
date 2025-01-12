@@ -18,9 +18,10 @@
             "default": "./lib/gql.js"
         }
     },
-    "bin": "bin/fragql.js",
+    "bin": {
+        "fragql": "lib/cli.js"
+    },
     "files": [
-        "bin",
         "lib"
     ],
     "peerDependencies": {
