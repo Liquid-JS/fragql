@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.1](https://github.com/Liquid-JS/fragql/compare/v1.1.0...v1.1.1) (2026-01-20)
+
+
+### Bug Fixes
+
+* cli ([a7324ac](https://github.com/Liquid-JS/fragql/commit/a7324ac12c4d14e71ed1b57e4aa8873171cc0308))
+* cli info ([27dc598](https://github.com/Liquid-JS/fragql/commit/27dc59876b499c8721d934e056abc7e25db87237))
+
 ## [1.1.0](https://github.com/Liquid-JS/fragql/compare/v1.0.0...v1.1.0) (2025-01-09)
 
 
